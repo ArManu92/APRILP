@@ -3,12 +3,18 @@ from tkinter import messagebox
 from tkinter import ttk
 from tkcalendar import Calendar, DateEntry
 from tkinter import Tk, Label, Entry, Button, IntVar, Checkbutton, messagebox
+import os
 import sqlite3
 
 
 # Variables globales para el superusuario y la ventana principal
 is_superuser = False
 main_window = None
+
+# Obtener la ruta del archivo de la base de datos relativo al archivo `gui.py`
+db_path = os.path.join(os.path.dirname(__file__), '..', 'db', 'Aprilp.db')
+
+#conn = sqlite3.connect(db_path)
 
 def login(): # Función para login
     global main_window
@@ -19,7 +25,7 @@ def login(): # Función para login
         username = entry_username.get()
         password = entry_password.get()
 
-        conn = sqlite3.connect('/Users/manuarlei/Library/CloudStorage/OneDrive-Personal/PROYECTOS PERSONALES/ENTORNO2/Clinica/db/Aprilp.db')
+        conn = sqlite3.connect(db_path)
         c = conn.cursor()
         c.execute("SELECT * FROM Usuarios WHERE username = ? AND password = ?", (username, password))
         usuario = c.fetchone()
@@ -55,7 +61,7 @@ def registrar_usuario(): # Función para registrar un nuevo usuario
         password = entry_password.get()
         is_superuser_value = var_is_superuser.get()
 
-        conn = sqlite3.connect('/Users/manuarlei/Library/CloudStorage/OneDrive-Personal/PROYECTOS PERSONALES/ENTORNO2/Clinica/db/Aprilp.db')
+        conn = sqlite3.connect(db_path)
         c = conn.cursor()
         c.execute("INSERT INTO Usuarios (username, password, is_superuser) VALUES (?, ?, ?)",
                   (username, password, is_superuser_value))
@@ -94,7 +100,7 @@ def agregar_paciente():
         dni = entry_dni.get()
         obra_social = entry_obra_social.get()
 
-        conn = sqlite3.connect('/Users/manuarlei/Library/CloudStorage/OneDrive-Personal/PROYECTOS PERSONALES/ENTORNO2/Clinica/db/Aprilp.db')
+        conn = sqlite3.connect(db_path)
         c = conn.cursor()
         c.execute("INSERT INTO Pacientes (nombre, apellido, fecha_nacimiento, direccion, telefono, dni, obra_social) VALUES (?, ?, ?, ?, ?, ?, ?)",
                   (nombre, apellido, fecha_nacimiento, direccion, telefono, dni, obra_social))
@@ -144,7 +150,7 @@ def agregar_medico():
         especialidad = entry_especialidad.get()
         telefono = entry_telefono.get()
 
-        conn = sqlite3.connect('/Users/manuarlei/Library/CloudStorage/OneDrive-Personal/PROYECTOS PERSONALES/ENTORNO2/Clinica/db/Aprilp.db')
+        conn = sqlite3.connect(db_path)
         c = conn.cursor()
         c.execute("INSERT INTO Medicos (nombre, apellido, especialidad, telefono) VALUES (?, ?, ?, ?)",
                   (nombre, apellido, especialidad, telefono))
@@ -182,7 +188,7 @@ def asignar_turno():
         fecha = entry_fecha.get()
         hora = entry_hora.get()
 
-        conn = sqlite3.connect('/Users/manuarlei/Library/CloudStorage/OneDrive-Personal/PROYECTOS PERSONALES/ENTORNO2/Clinica/db/Aprilp.db')
+        conn = sqlite3.connect(db_path)
         c = conn.cursor()
 
         # Obtener el id del paciente usando el dni
@@ -223,7 +229,7 @@ def asignar_turno():
     combo_medico.grid(row=1, column=1)
 
     # Poblar el combobox con nombres y apellidos de los médicos
-    conn = sqlite3.connect('/Users/manuarlei/Library/CloudStorage/OneDrive-Personal/PROYECTOS PERSONALES/ENTORNO2/Clinica/db/Aprilp.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute("SELECT nombre, apellido FROM Medicos")
     medicos = c.fetchall()
@@ -245,7 +251,7 @@ def editar_paciente():
     def buscar_paciente():
         dni_paciente = entry_dni.get()
         
-        conn = sqlite3.connect('/Users/manuarlei/Library/CloudStorage/OneDrive-Personal/PROYECTOS PERSONALES/ENTORNO2/Clinica/db/Aprilp.db')
+        conn = sqlite3.connect(db_path)
         c = conn.cursor()
         c.execute("SELECT * FROM Pacientes WHERE dni = ?", (dni_paciente,))
         paciente = c.fetchone()
@@ -271,7 +277,7 @@ def editar_paciente():
         telefono = entry_telefono.get()
         obra_social = entry_obra_social.get()
 
-        conn = sqlite3.connect('/Users/manuarlei/Library/CloudStorage/OneDrive-Personal/PROYECTOS PERSONALES/ENTORNO2/Clinica/db/Aprilp.db')
+        conn = sqlite3.connect(db_path)
         c = conn.cursor()
         c.execute("""UPDATE Pacientes SET nombre = ?, apellido = ?, fecha_nacimiento = ?, direccion = ?, 
                      telefono = ?, obra_social = ? WHERE dni = ?""",
@@ -325,7 +331,7 @@ def eliminar_paciente():
     def eliminar():
         dni_paciente = entry_dni.get()
 
-        conn = sqlite3.connect('/Users/manuarlei/Library/CloudStorage/OneDrive-Personal/PROYECTOS PERSONALES/ENTORNO2/Clinica/db/Aprilp.db')
+        conn = sqlite3.connect(db_path)
         c = conn.cursor()
         c.execute("DELETE FROM Pacientes WHERE dni = ?", (dni_paciente,))
         conn.commit()
@@ -349,7 +355,7 @@ def cambiar_super_usuario():
         username = entry_username.get()
         is_superuser_value = var_is_superuser.get()
 
-        conn = sqlite3.connect('/Users/manuarlei/Library/CloudStorage/OneDrive-Personal/PROYECTOS PERSONALES/ENTORNO2/Clinica/db/Aprilp.db')
+        conn = sqlite3.connect(db_path)
         c = conn.cursor()
         c.execute("UPDATE Usuarios SET is_superuser = ? WHERE username = ?", (is_superuser_value, username))
         conn.commit()
@@ -395,7 +401,7 @@ def mostrar_turnos():
     def buscar_turnos():
         fecha = entry_fecha.get()
 
-        conn = sqlite3.connect('/Users/manuarlei/Library/CloudStorage/OneDrive-Personal/PROYECTOS PERSONALES/ENTORNO2/Clinica/db/Aprilp.db')
+        conn = sqlite3.connect(db_path)
         c = conn.cursor()
         c.execute("SELECT Pacientes.nombre, Pacientes.apellido, Turnos.hora, Medicos.nombre, Medicos.apellido "
                   "FROM Turnos "
