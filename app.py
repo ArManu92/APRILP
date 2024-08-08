@@ -1,14 +1,20 @@
 from flask import Flask, request, jsonify
 import sqlite3
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+import os
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret-key'
 jwt = JWTManager(app)
 
+@app.route('/')
+def home():
+    return "¡Hola! La aplicación Flask está funcionando."
+
 # Función para conectar a la base de datos
 def get_db_connection():
-    conn = sqlite3.connect('C:/Users/usuario/OneDrive/PROYECTOS PERSONALES/ENTORNO2/Clinica/db/Aprilp.db')
+    db_path = os.path.join(os.path.dirname(__file__), '..', 'db', 'Aprilp.db')
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
 
